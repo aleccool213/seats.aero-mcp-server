@@ -8,17 +8,25 @@ import {
   GetBulkAvailSchema,
   GetFlightsSchema,
   GetRoutesSchema,
+  GetTripsSchema,
 } from './schema.js';
 import { getBulkAvailTool } from './tools/flights/getBulkAvail.js';
 import { getRoutesTool } from './tools/flights/getRoutes.js';
+import { getTripsTool } from './tools/flights/getTrips.js';
 
-const server = new McpServer(
-  {
-    name: 'seats-mcp',
-    version: '1.0.1',
-  },
-  {
-    instructions: `This server provides tools to search for award flight availability through seats.aero.
+// The stdio path creates one persistent server instance and registers tools on it.
+// The HTTP path creates a fresh server + transport per request inside src/server/http.ts
+// (so we skip the global instance when running in HTTP mode to avoid wasted work).
+const isHttpMode = process.env.MCP_TRANSPORT === 'http' || !!process.env.PORT;
+
+if (!isHttpMode) {
+  const server = new McpServer(
+    {
+      name: 'seats-mcp',
+      version: '1.0.1',
+    },
+    {
+      instructions: `This server provides tools to search for award flight availability through seats.aero.
 
 Available tools:
 1. get_flights: Search for specific flight routes between airports
@@ -40,35 +48,49 @@ You should only use the tools provided by this server for flight searches.
 Cabin classes available: economy, premium, business, first
 Date format required: YYYY-MM-DD
 Sources supported: eurobonus, virginatlantic, aeromexico, american, delta, etihad, united, emirates, aeroplan, alaska, velocity, qantas, and more.`,
-  }
-);
+    }
+  );
 
-server.tool(
-  'get_flights',
-  'Get cached award flights on seats.aero.',
-  GetFlightsSchema.shape,
-  async (params) => {
-    return await getFlightsTool(params);
-  }
-);
+  server.tool(
+    'get_flights',
+    'Get cached award flights on seats.aero.',
+    GetFlightsSchema.shape,
+    async (params) => {
+      return await getFlightsTool(params);
+    }
+  );
 
-server.tool(
-  'get_bulk_avail',
-  'Find bulk availability for a particular source.',
-  GetBulkAvailSchema.shape,
-  async (params) => {
-    return await getBulkAvailTool(params);
-  }
-);
+  server.tool(
+    'get_bulk_avail',
+    'Find bulk availability for a particular source.',
+    GetBulkAvailSchema.shape,
+    async (params) => {
+      return await getBulkAvailTool(params);
+    }
+  );
 
-server.tool(
-  'get_routes',
-  'Get routes for a particular source.',
-  GetRoutesSchema.shape,
-  async (params) => {
-    return await getRoutesTool(params);
-  }
-);
+  server.tool(
+    'get_routes',
+    'Get routes for a particular source.',
+    GetRoutesSchema.shape,
+    async (params) => {
+      return await getRoutesTool(params);
+    }
+  );
 
-const transport = new StdioServerTransport();
-await server.connect(transport);
+  server.tool(
+    'get_trips',
+    'Get detailed flight segments, taxes, and booking links for a specific availability result (use the ID returned by get_flights).',
+    GetTripsSchema.shape,
+    async (params) => {
+      return await getTripsTool(params);
+    }
+  );
+
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+} else {
+  // HTTP mode — the real server instances are created per-request in src/server/http.ts
+  const { startHttpServer } = await import('./server/http.js');
+  startHttpServer();
+}

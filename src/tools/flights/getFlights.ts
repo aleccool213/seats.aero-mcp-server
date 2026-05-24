@@ -13,11 +13,15 @@ export async function getFlightsTool(args: GetFlightsParams) {
       only_direct_flights = false,
       carriers,
       skip = 0,
-      order_by = 'price',
+      order_by,
       startDate,
       endDate,
       departureDate,
       cabinClass,
+      cabins,
+      sources,
+      minify_trips,
+      include_filtered,
     } = args;
 
     if (!process.env.SEATS_API_KEY) {
@@ -36,7 +40,7 @@ export async function getFlightsTool(args: GetFlightsParams) {
     queryParams.append('origin_airport', originAirport.toString());
     queryParams.append('destination_airport', destinationAirport.toString());
     queryParams.append('skip', skip.toString());
-    queryParams.append('order_by', order_by);
+    if (order_by) queryParams.append('order_by', order_by);
     queryParams.append('take', take.toString());
     queryParams.append('include_trips', include_trips.toString());
     queryParams.append('only_direct_flights', only_direct_flights.toString());
@@ -45,6 +49,10 @@ export async function getFlightsTool(args: GetFlightsParams) {
     if (endDate) queryParams.append('end_date', endDate);
     if (departureDate) queryParams.append('departure_date', departureDate);
     if (cabinClass) queryParams.append('cabin_class', cabinClass);
+    if (cabins) queryParams.append('cabins', cabins);
+    if (sources) queryParams.append('sources', sources);
+    if (minify_trips !== undefined) queryParams.append('minify_trips', minify_trips.toString());
+    if (include_filtered !== undefined) queryParams.append('include_filtered', include_filtered.toString());
 
     const flights = await fetch(
       `https://seats.aero/partnerapi/search?${queryParams.toString()}`,

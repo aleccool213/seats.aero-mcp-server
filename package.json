@@ -8,18 +8,28 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "dev": "tsc --watch",
-    "start": "node build/index.js"
+    "start": "node build/index.js",
+    "start:http": "MCP_TRANSPORT=http node build/index.js",
+    "dev:http": "echo 'Run: MCP_TRANSPORT=http node build/index.js after pnpm build (or use tsx for watch if installed)'",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:ci": "vitest run --coverage"
   },
   "keywords": [],
   "author": "Gavin Gregory <gavin@thecomponent.studio>",
   "license": "MPL-2.0",
   "packageManager": "pnpm@9.14.4+sha512.c8180b3fbe4e4bca02c94234717896b5529740a6cbadf19fa78254270403ea2f27d4e1d46a08a0f56c89b63dc8ebfd3ee53326da720273794e6200fcf0d184ab",
   "devDependencies": {
+    "@types/express": "^4.17.21",
     "@types/node": "^22.14.0",
-    "typescript": "^5.8.3"
+    "@types/supertest": "^7.2.0",
+    "supertest": "^7.2.2",
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.7"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.9.0",
+    "express": "^4.21.2",
     "zod": "^3.24.2"
   }
 }

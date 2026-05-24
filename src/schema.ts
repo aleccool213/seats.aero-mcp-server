@@ -25,13 +25,21 @@ const SOURCES = [
   'singapore',
   'ethiopian',
   'saudia',
+  // Added from official seats.aero Concepts table (May 2026)
+  'finnair',
+  'lufthansa',
+  'frontier',
+  'spirit',
 ] as const;
 
 export const GetFlightsSchema = z.object({
   originAirport: z.string(),
   destinationAirport: z.string(),
   departureDate: z.string().optional(),
+  // Legacy single-cabin param (still supported for backward compat)
   cabinClass: z.enum(CABIN_CLASSES).optional(),
+  // Newer multi-cabin support (preferred when possible)
+  cabins: z.string().optional(), // comma-separated, e.g. "economy,business"
   startDate: z
     .string()
     .regex(/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/)
@@ -45,8 +53,13 @@ export const GetFlightsSchema = z.object({
   order_by: z.enum(ORDER_BY_OPTIONS).optional(),
   skip: z.number().optional(),
   include_trips: z.boolean().optional(),
+  minify_trips: z.boolean().optional(),
   only_direct_flights: z.boolean().optional(),
-  carriers: z.string().min(2).max(2).optional(),
+  // Fixed: was incorrectly limited to exactly 2 chars. Now allows comma lists like "DL,AA,AS"
+  carriers: z.string().optional(),
+  // NEW: filter to specific mileage programs (highly recommended for Aeroplan use)
+  sources: z.string().optional(), // comma-separated, e.g. "aeroplan,united,delta"
+  include_filtered: z.boolean().optional(),
 });
 
 export const GetBulkAvailSchema = z.object({
@@ -74,3 +87,12 @@ export const GetRoutesSchema = z.object({
 export type CabinClass = (typeof CABIN_CLASSES)[number];
 export type OrderByOption = (typeof ORDER_BY_OPTIONS)[number];
 export type Source = (typeof SOURCES)[number];
+
+// Export the runtime list so tests (and potentially tools) can introspect supported programs
+export { SOURCES };
+
+// New tool for detailed trip/segment + booking link data
+export const GetTripsSchema = z.object({
+  id: z.string().min(10, "Availability ID looks too short"),
+  include_filtered: z.boolean().optional(),
+});
