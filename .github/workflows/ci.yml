@@ -9,6 +9,9 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    env:
+      # Suppress Node 20 deprecation warnings for actions (GitHub is moving to Node 24)
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout repository
@@ -23,8 +26,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          # cache: 'pnpm' is disabled because pnpm-lock.yaml is not committed
-          # (see chore/remove-lockfiles). We can re-enable it if the lockfile is added back.
+          cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
