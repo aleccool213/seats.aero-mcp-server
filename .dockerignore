@@ -1,0 +1,31 @@
+# Dependencies
+node_modules
+npm-debug.log
+pnpm-debug.log
+
+# Build output
+build
+
+# Git & IDE
+.git
+.gitignore
+.idea
+.vscode
+
+# Testing & CI
+test
+coverage
+*.test.ts
+vitest.config.ts
+
+# Documentation & misc
+README.md
+CONTRIBUTING.md
+*.md
+.github
+render.yaml
+fly.toml
+.env*
+.DS_Store
+
+# Lockfiles are needed for pnpm install in Docker, so keep pnpm-lock.yaml

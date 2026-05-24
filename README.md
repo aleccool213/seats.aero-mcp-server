@@ -100,10 +100,27 @@ This server is designed to be hosted and used via **Grok's Remote MCP** feature.
 
 ### 1. Deploy
 
-Recommended cheap options:
-- **Render.com** – Free tier (sleeps) or $7/mo Starter (always on)
-- **Fly.io** – Very cheap shared CPU machines
-- Any small VPS + Docker
+We provide ready-to-use configuration for the easiest cheap platforms:
+
+| Platform     | File            | Approx. Cost     | Notes                              |
+|--------------|-----------------|------------------|------------------------------------|
+| **Render**   | `render.yaml`   | $7/mo (Starter) or free | One-click deploy, easiest for beginners |
+| **Fly.io**   | `fly.toml`      | ~$2–5/mo        | Very flexible, good free allowance |
+| Any Docker   | `Dockerfile`    | Varies          | Works on Railway, VPS, etc.        |
+
+**Quick Render deploy** (recommended):
+1. Push your code to GitHub
+2. In Render → "New Web Service" → connect your repo
+3. It will auto-detect `render.yaml`
+4. Set the two secrets:
+   - `SEATS_API_KEY`
+   - `MCP_AUTH_TOKEN` (pick a strong random string)
+
+The improved `Dockerfile` now includes:
+- Proper healthcheck (`/healthz`)
+- Support for both stdio and HTTP mode
+- Non-root user + small image
+- Respects `$PORT` and `$MCP_TRANSPORT`
 
 The included `Dockerfile` supports both stdio and HTTP modes via environment variables.
 

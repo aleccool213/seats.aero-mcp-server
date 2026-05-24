@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: seats-aero-mcp
+    env: node
+    region: oregon
+    plan: starter   # $7/mo - never sleeps (recommended for MCP)
+    # plan: free    # Free tier (spins down after 15 min inactivity)
+    buildCommand: pnpm install --frozen-lockfile && pnpm build
+    startCommand: node build/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MCP_TRANSPORT
+        value: http
+      - key: SEATS_API_KEY
+        sync: false   # You will set this in the Render dashboard
+      - key: MCP_AUTH_TOKEN
+        sync: false   # Strongly recommended - set a strong secret here
+    healthCheckPath: /healthz
+    autoDeploy: true
