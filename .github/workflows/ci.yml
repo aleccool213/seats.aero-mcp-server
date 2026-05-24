@@ -23,7 +23,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'pnpm'
+          # cache: 'pnpm' is disabled because pnpm-lock.yaml is not committed
+          # (see chore/remove-lockfiles). We can re-enable it if the lockfile is added back.
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
