@@ -157,12 +157,46 @@ Grok will call your server on your behalf.
 
 ## Environment Variables
 
+### Local Development
+
+Copy the example file and fill it in:
+
+```bash
+cp .env.example .env
+# Then edit .env with your real keys
+```
+
+Or just export them in your shell:
+
+```bash
+export SEATS_API_KEY=your_real_key
+export MCP_AUTH_TOKEN=dev-token-for-local-testing
+MCP_TRANSPORT=http pnpm start:http
+```
+
+We automatically load `.env` (via `dotenv`) when `NODE_ENV` is not `production`.
+
+### Production (Render, Fly, Railway, etc.)
+
+**Never** put real secrets in `render.yaml`, `fly.toml`, or committed files.
+
+Instead, set them as **environment variables** in your hosting platform's dashboard:
+
+- `SEATS_API_KEY` → Your real seats.aero Pro API key
+- `MCP_AUTH_TOKEN` → A strong secret token (generate with `openssl rand -hex 32` or similar). This is what you will put in Grok's `authorization` field.
+
+Example for Render:
+- Go to your service → Environment
+- Add the two keys above (mark them as secret if the UI offers it)
+
 | Variable            | Required | Description                                      |
 |---------------------|----------|--------------------------------------------------|
 | `SEATS_API_KEY`     | Yes      | Your seats.aero Partner API key (Pro account)    |
-| `MCP_AUTH_TOKEN`    | No       | Bearer token required to call the HTTP endpoint  |
-| `PORT`              | No       | Port for HTTP mode (default: 3000)               |
-| `MCP_TRANSPORT`     | No       | Set to `http` to force HTTP mode                 |
+| `MCP_AUTH_TOKEN`    | No*      | Bearer token required to call the HTTP endpoint  |
+| `PORT`              | No       | Port for HTTP mode (platforms usually set this)  |
+| `MCP_TRANSPORT`     | No       | Set to `http` when deploying for remote use      |
+
+\* Strongly recommended when exposing the server publicly.
 
 ---
 

@@ -12,9 +12,10 @@ services:
         value: production
       - key: MCP_TRANSPORT
         value: http
+      # === Secrets - set these in the Render dashboard (never commit real values) ===
       - key: SEATS_API_KEY
-        sync: false   # You will set this in the Render dashboard
+        sync: false
       - key: MCP_AUTH_TOKEN
-        sync: false   # Strongly recommended - set a strong secret here
+        sync: false   # Generate a strong random token (e.g. using `openssl rand -hex 32`)
     healthCheckPath: /healthz
     autoDeploy: true

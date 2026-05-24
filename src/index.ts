@@ -1,3 +1,14 @@
+// Load .env file for local development (safe to ignore in production)
+if (process.env.NODE_ENV !== 'production') {
+  try {
+    // Dynamic import so we don't bundle dotenv in production builds
+    const dotenv = await import('dotenv');
+    dotenv.config();
+  } catch {
+    // dotenv not installed or no .env file — that's fine
+  }
+}
+
 import {
   McpServer,
   ResourceTemplate,
